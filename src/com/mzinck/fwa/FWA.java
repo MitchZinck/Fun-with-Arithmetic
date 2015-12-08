@@ -2,6 +2,7 @@ package com.mzinck.fwa;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
@@ -21,15 +22,26 @@ public class FWA {
     private static String       name      = "";
     private static Scanner      scan      = new Scanner(System.in);
     private static int          timeCount = 0,
-                                hardTime = 0;
+                                hardTime = Integer.MAX_VALUE / 1001;
     private static File output;
     
     /**
      * Start of our program. Loads the properties files and reads their highscores.
+     * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
         output = new File(System.getProperty("user.home") + "\\arithmetic.properties");
-        props.load(new FileInputStream(System.getProperty("user.home") + "\\arithmetic.properties"));
+        try {
+            props.load(new FileInputStream(System.getProperty("user.home") + "\\arithmetic.properties"));
+        } catch (FileNotFoundException e){
+            try {
+                output.createNewFile();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+        }
+           
         if(props.getProperty("timeCount") != null) {
             timeCount = Integer.parseInt(props.getProperty("timeCount"));
             hardTime = Integer.parseInt(props.getProperty("hardTime"));
@@ -77,9 +89,6 @@ public class FWA {
                         + "Hard Mode: " + hardTime + " seconds!\n"
                         + "Press any key to go back to the main menu!");
                 scan.nextLine();
-                for(int i = 0; i < 50; i++) {
-                    System.out.println();
-                }
                 break;
                
             default:                
@@ -110,13 +119,14 @@ public class FWA {
                 submitQuestion(getQuery(4, false));           
                 log("You completed the tutorial, press any key to continue!");
                 scan.nextLine();
+                scan.nextLine();
                 break;
             case HARD:
                 log("In Hard mode you are given 5 questions that you have to complete as fast as possible.\n"
                   + "Questions will start in 3 seconds.");
                 countDown();
                 long time = System.currentTimeMillis();
-                submitQuestion(getQuery(5, true));
+                submitQuestion(getQuery(1, true));
                 time = System.currentTimeMillis() - time;
                 if(time < hardTime * 1000) {
                     log("Congratulations you beat your highscore! 5 hard questions in " + (time / 1000) + " seconds!");
@@ -138,29 +148,34 @@ public class FWA {
                 log("You completed " + c + " questions!");
                 log("Press any key to continue!");
                 scan.nextLine();
+                scan.nextLine();
                 break;
             case TIME:
                 log("In Time Attack mode you will try to do as many questions as possible in 30 seconds.");
                 countDown();
-                long cd = 30, counter = 0;
-                while(cd > 0) {
+                int counter = 0;
+                long current = System.currentTimeMillis();
+                while(true) {
                    submitQuestion(getQuery(1, false));
                    counter++;
+                   if(System.currentTimeMillis() - current > 10000) {
+                       break;
+                   }                  
                 }
                 if(timeCount < counter) {
                     log("Congratulations, you beat your highscore by " + (counter - timeCount) + "!");
-                    timeCount = (int) (counter / 1000);
+                    timeCount = counter;
                     setProps();
                 } else {
                     log("Congratulations, you completed " + counter + " questions in 30 seconds!");
                 }
                 log("Press any key to continue!");
                 scan.nextLine();
+                scan.nextLine();
                 break;          
         }
-        for(int i = 0; i < 50; i++) {
-            System.out.println();
-        }
+        System.out.println();
+        System.out.println();
         setState();        
     }
     
