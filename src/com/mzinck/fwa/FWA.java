@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 /**
- * Program that does distances
+ * Program that teaches and helps kids with arithmetic
  * 
  * @author Mitchell Zinck <mitch@mzinck.com> <mitchellzinck@yahoo.com>
  */
@@ -23,7 +23,10 @@ public class FWA {
     private static int          timeCount = 0,
                                 hardTime = 0;
     private static File output;
-
+    
+    /**
+     * Start of our program. Loads the properties files and reads their highscores.
+     */
     public static void main(String[] args) throws IOException {
         output = new File(System.getProperty("user.home") + "\\arithmetic.properties");
         props.load(new FileInputStream(System.getProperty("user.home") + "\\arithmetic.properties"));
@@ -39,10 +42,10 @@ public class FWA {
         setState();        
     }
     
-    public static void test(String z) {
-        z = "k";
-    }
-    
+    /**
+     * Menu picker for our program. Sets the state based on what the user types into the console
+     * and then initiates the main loop.
+     */
     public static void setState() {
         state = State.START;
         log("Welcome to Fun with Arithmetic " + name + "!\nPlease enter the letters:\n"
@@ -86,16 +89,14 @@ public class FWA {
         if(state == State.START) {
             setState();
         } else {
-            try {
-                mainLoop();
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            mainLoop();
         }
     }
     
-    public static void mainLoop() throws InterruptedException {        
+    /**
+     * Switches through the states. Whichever state was picked has a set of instructions.
+     */
+    public static void mainLoop() {        
         switch(state) {
             case NEW:
                 log("=====Fun with Arithmetic=====\n"
@@ -163,6 +164,9 @@ public class FWA {
         setState();        
     }
     
+    /**
+     * Stores the users highscores as a properties file.
+     */
     public static void setProps() {
         props.setProperty("hardTime", Integer.toString(hardTime));
         props.setProperty("timeCount", Integer.toString(timeCount));
@@ -176,7 +180,10 @@ public class FWA {
             e.printStackTrace();
         }
     }
-    
+
+    /**
+     * Method for counting down.
+     */
     public static void countDown() {
         try {
             Thread.sleep(1000);
@@ -193,6 +200,15 @@ public class FWA {
         }
     }
     
+    /**
+     * Returns a String array of questions for the user.
+     * 
+     * @param totalQ
+     *            Amount of questions needed.
+     * @param hard
+     *            Determines whether the questions are harder than usual.
+     * @return a <code>String[] array</code>
+     */
     public static String[] getQuery(int totalQ, boolean hard) {        
         String[] array = new String[totalQ];
         Random rand = new Random();
@@ -228,6 +244,13 @@ public class FWA {
         return array;
     }
     
+    /**
+     * Queries the user with questions.
+     * 
+     * @param query
+     *            The array with questions
+     * @return <code>true</code> if user didn't exit.
+     */
     public static boolean submitQuestion(String[] query) {
         for(int i = 0; i < query.length; i++) {
             if(query.length > 1) {
@@ -246,6 +269,12 @@ public class FWA {
         return true;
     }
     
+    /**
+     * Prints the given message.
+     * 
+     * @param message
+     *            The message to be printed.
+     */
     public static void log(String message) {
         System.out.println(message);
     }
